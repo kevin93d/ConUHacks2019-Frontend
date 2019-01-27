@@ -114,6 +114,6 @@ export class Tab1Page implements OnInit {
   }
 
   getId() {
-    return this.http.get(environment.url + "id/0/")
+    return this.http.get(environment.url + "id/0/", { responseType: 'text' })
   }
 }
