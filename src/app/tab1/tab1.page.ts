@@ -22,36 +22,28 @@ export class Tab1Page implements OnInit {
   }
 
    ngOnInit() {
-    this.anotherid = 'x6inb0403pl00000';
-     let video = this.myVideo.nativeElement;
+    this.anotherid = '4l1wkas3tn700000';
+    let video = this.myVideo.nativeElement;
     this.peer = new Peer();
     setTimeout(() => {
-    this.mypeerid = this.peer.id;
+      this.mypeerid = this.peer.id;
     },3000);
-    console.log(this.peer);
     this.mypeerid = this.peer.id;
 
-    // receiving
-    this.peer.on('connection', function(conn) {
-      conn.on('data', function(data) {
-        console.log(data);
-      });
-    });
-
-     var n = <any>navigator;
-
+     let n = <any>navigator;
      n.getUserMedia =  ( n.getUserMedia || n.webkitGetUserMedia || n.mozGetUserMedia || n.msGetUserMedia );
 
      this.peer.on('call', function(call) {
-
+       console.log("You have a call!");
        n.getUserMedia({video: true, audio: true}, function(stream) {
          call.answer(stream);
-         console.log('gmm');
-         call.on('stream', function(remotestream){
-           video.src = URL.createObjectURL(remotestream);
-           video.play();
-           console.log(remotestream);
-           console.log('gmm');
+         call.on('stream', function(remoteStream){
+           console.log("Stream started");
+           video.srcObject = remoteStream;
+           video.onloadedmetadata = function (e) {
+             console.log(e);
+             video.play();
+           }
          })
        }, function(err) {
          console.log('Failed to get stream', err);
@@ -63,23 +55,23 @@ export class Tab1Page implements OnInit {
    // out going
    connect() {
      var conn = this.peer.connect(this.anotherid);
-     console.log(conn);
      let video = this.myVideo.nativeElement;
-     var localvar = this.peer;
-     var fname = this.anotherid;
-     conn.on('open', function() {
-       console.log('gmm');
-       conn.send('Message from that id');
-       var n = <any>navigator;
-       console.log(video);
+     let localPeer = this.peer;
+     let fname = this.anotherid;
+      // on open will be launch when you successfully connect to PeerServer
+     conn.on('open', function(){
+       // here you have conn.id
+       console.log("Connected to PeerServer");
 
+       let n = <any>navigator;
        n.getUserMedia = ( n.getUserMedia || n.webkitGetUserMedia || n.mozGetUserMedia  || n.msGetUserMedia );
        n.getUserMedia({video: true, audio: true}, function(stream) {
-         var call = localvar.call(fname, stream);
+         let call = localPeer.call(fname, stream);
          call.on('stream', function(remoteStream) {
+           console.log("Stream started");
            video.srcObject = remoteStream;
-           console.log(video.srcObject);
            video.onloadedmetadata = function (e) {
+             console.log(e);
              video.play();
            }
          });
@@ -88,29 +80,6 @@ export class Tab1Page implements OnInit {
        });
      });
    }
-
-  videoconnect(){
-    let video = this.myVideo.nativeElement;
-    var localvar = this.peer;
-    var fname = this.anotherid;
-
-    var n = <any>navigator;
-    console.log(video);
-
-    n.getUserMedia = ( n.getUserMedia || n.webkitGetUserMedia || n.mozGetUserMedia  || n.msGetUserMedia );
-
-    n.getUserMedia({video: true, audio: true}, function(stream) {
-      var call = localvar.call(fname, stream);
-      call.on('stream', function(remotestream) {
-        console.log(remotestream);
-        console.log('gmm');
-        video.src = URL.createObjectURL(remotestream);
-        video.play();
-      })
-    }, function(err){
-      console.log('Failed to get stream', err);
-    })
-  }
 
   talk(numb: number) {
 
