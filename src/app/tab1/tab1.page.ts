@@ -15,12 +15,13 @@ export class Tab1Page implements OnInit {
   peer: any;
   anotherid: any;
   mypeerid: any;
+  isConnected: boolean;
   constructor(private tts: TextToSpeech) {
     this.locale = 'en-CA';
   }
 
    ngOnInit() {
-    this.anotherid = '4l1wkas3tn700000';
+    this.anotherid = 'z93oa5l63w000000';
     let video = this.myVideo.nativeElement;
     this.peer = new Peer();
     setTimeout(() => {
@@ -56,27 +57,33 @@ export class Tab1Page implements OnInit {
      let video = this.myVideo.nativeElement;
      let localPeer = this.peer;
      let fname = this.anotherid;
+     let status = this.isConnected;
       // on open will be launch when you successfully connect to PeerServer
      conn.on('open', function(){
        // here you have conn.id
        console.log("Connected to PeerServer");
-
        let n = <any>navigator;
        n.getUserMedia = ( n.getUserMedia || n.webkitGetUserMedia || n.mozGetUserMedia  || n.msGetUserMedia );
        n.getUserMedia({video: true, audio: true}, function(stream) {
          let call = localPeer.call(fname, stream);
-         call.on('stream', function(remoteStream) {
-           console.log("Stream started");
-           video.srcObject = remoteStream;
-           video.onloadedmetadata = function (e) {
-             console.log(e);
-             video.play();
-           }
-         });
+         if (status) {
+           localPeer.destroy();
+           location.reload();
+         } else {
+           call.on('stream', function(remoteStream) {
+             console.log("Stream started");
+             video.srcObject = remoteStream;
+             video.onloadedmetadata = function (e) {
+               console.log(e);
+               video.play();
+             }
+           });
+         }
        }, function(err) {
          console.log('Failed to get local stream' ,err);
        });
      });
+     this.isConnected = !this.isConnected;
    }
 
   talk(text: string) {
@@ -89,9 +96,8 @@ export class Tab1Page implements OnInit {
     this.locale = locale;
   }
 
-  end(){
-    this.myVideo.nativeElement.close();
+  connectStatus() {
+    return this.isConnected ?  'End Call' : 'Call Peer';
   }
-
 
 }

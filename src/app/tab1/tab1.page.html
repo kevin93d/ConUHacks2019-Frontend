@@ -13,8 +13,8 @@
     </ion-card-header>
     <ion-card-content>
       <video #myvideo autoplay width="300" height="300"></video>
-      <ion-button margin-top="10px" shape="round" size="small" expand="full" (click)="connect()">Call Peer</ion-button>
-      <ion-button color="danger" shape="round" size="small" expand="full" (click)="end()">End Call</ion-button>
+      <ion-button margin-top="10px" shape="round" size="small" expand="full" (click)="connect()">{{connectStatus()}}</ion-button>
+      <!--<ion-button color="danger" shape="round" size="small" expand="full" (click)="end()">End Call</ion-button>-->
     </ion-card-content>
   </ion-card>
 
