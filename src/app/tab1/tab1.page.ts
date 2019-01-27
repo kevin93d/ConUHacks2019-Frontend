@@ -134,7 +134,6 @@ export class Tab1Page implements OnInit {
   }
 
   sendImageRecursive(image) {
-    let t = this.text;
     setTimeout(() => {
       this.sendImage(image).subscribe(data => {
         let canvas = this.canvas.nativeElement;
@@ -143,7 +142,7 @@ export class Tab1Page implements OnInit {
 
         var d = canvas.toDataURL('image/png');
         console.log(data);
-        t = t + ' ' + data + '\n';
+        this.text = this.text + ' ' + data + '\n';
         this.sendImageRecursive(d);
       });
     }, 500);
