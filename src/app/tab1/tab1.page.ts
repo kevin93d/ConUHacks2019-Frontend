@@ -3,7 +3,6 @@ import { TextToSpeech } from '@ionic-native/text-to-speech/ngx';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Platform} from '@ionic/angular';
 import {environment} from '../../environments/environment';
-import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 
 declare var Peer: any;
 
@@ -23,24 +22,8 @@ export class Tab1Page implements OnInit {
   mypeerid: any;
   isConnected: boolean;
   text: String;
-  constructor(private platform: Platform, private tts: TextToSpeech, private http: HttpClient, private androidPermissions: AndroidPermissions) {
+  constructor(private tts: TextToSpeech, private http: HttpClient) {
     this.locale = 'en-CA';
-    if (this.platform.is('cordova')) {
-      this.platform.ready().then(() => {
-        this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.CAMERA).then(
-          result => console.log('Has permission?', result.hasPermission),
-          err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.CAMERA)
-        );
-
-        this.androidPermissions.requestPermissions([this.androidPermissions.PERMISSION.CAMERA]);
-        this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.RECORD_AUDIO).then(
-          result => console.log('Has permission?', result.hasPermission),
-          err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.RECORD_AUDIO)
-        );
-
-        this.androidPermissions.requestPermissions([this.androidPermissions.PERMISSION.RECORD_AUDIO]);
-      });
-    }
   }
 
    ngOnInit() {
