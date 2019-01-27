@@ -22,6 +22,7 @@ export class Tab1Page implements OnInit {
   anotherid: any;
   mypeerid: any;
   isConnected: boolean;
+  text: String;
   constructor(private platform: Platform, private tts: TextToSpeech, private http: HttpClient, private androidPermissions: AndroidPermissions) {
     this.locale = 'en-CA';
     if (this.platform.is('cordova')) {
@@ -149,6 +150,7 @@ export class Tab1Page implements OnInit {
   }
 
   sendImageRecursive(image) {
+    let t = this.text;
     setTimeout(() => {
       this.sendImage(image).subscribe(data => {
         let canvas = this.canvas.nativeElement;
@@ -157,6 +159,7 @@ export class Tab1Page implements OnInit {
 
         var d = canvas.toDataURL('image/png');
         console.log(data);
+        t.concat(data + '\n');
         this.sendImageRecursive(d);
       });
     }, 500);
