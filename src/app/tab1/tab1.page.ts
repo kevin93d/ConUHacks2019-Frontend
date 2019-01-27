@@ -24,6 +24,7 @@ export class Tab1Page implements OnInit {
   text: String;
   constructor(private tts: TextToSpeech, private http: HttpClient) {
     this.locale = 'en-CA';
+    this.text = '';
   }
 
    ngOnInit() {
