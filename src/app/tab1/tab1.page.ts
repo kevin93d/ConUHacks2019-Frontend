@@ -1,6 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import { TextToSpeech } from '@ionic-native/text-to-speech/ngx';
-import {log} from 'util';
 declare var Peer: any;
 
 @Component({
@@ -12,7 +11,6 @@ export class Tab1Page implements OnInit {
 
   @ViewChild('myvideo') myVideo: any;
 
-  text: string;
   locale: string;
   peer: any;
   anotherid: any;
@@ -81,24 +79,8 @@ export class Tab1Page implements OnInit {
      });
    }
 
-  talk(numb: number) {
-
-    switch (numb) {
-      case 1:
-        this.text = 'tabarnak';
-        break;
-      case 2:
-        this.text = 'Giet Mamaw';
-        break;
-      case 3:
-        this.text = 'Rosa tes laid';
-        break;
-      case 4:
-        this.text = 'Joke';
-        break;
-    }
-
-    this.tts.speak({ text: this.text, locale: this.locale } )
+  talk(text: string) {
+    this.tts.speak({ text: text, locale: this.locale } )
         .then(() => console.log('Success'))
         .catch((reason: any) => console.log(reason));
   }
@@ -107,6 +89,9 @@ export class Tab1Page implements OnInit {
     this.locale = locale;
   }
 
+  end(){
+    this.myVideo.nativeElement.close();
+  }
 
 
 }
