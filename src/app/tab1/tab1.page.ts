@@ -1,8 +1,9 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {RequestOptions} from '@angular/http';
 import { TextToSpeech } from '@ionic-native/text-to-speech/ngx';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {Platform} from '@ionic/angular';
 import {environment} from '../../environments/environment';
+import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 
 declare var Peer: any;
 
@@ -21,8 +22,24 @@ export class Tab1Page implements OnInit {
   anotherid: any;
   mypeerid: any;
   isConnected: boolean;
-  constructor(private tts: TextToSpeech, private http: HttpClient) {
+  constructor(private platform: Platform, private tts: TextToSpeech, private http: HttpClient, private androidPermissions: AndroidPermissions) {
     this.locale = 'en-CA';
+    if (this.platform.is('cordova')) {
+      this.platform.ready().then(() => {
+        this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.CAMERA).then(
+          result => console.log('Has permission?', result.hasPermission),
+          err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.CAMERA)
+        );
+
+        this.androidPermissions.requestPermissions([this.androidPermissions.PERMISSION.CAMERA]);
+        this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.RECORD_AUDIO).then(
+          result => console.log('Has permission?', result.hasPermission),
+          err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.RECORD_AUDIO)
+        );
+
+        this.androidPermissions.requestPermissions([this.androidPermissions.PERMISSION.RECORD_AUDIO]);
+      });
+    }
   }
 
    ngOnInit() {
@@ -87,7 +104,6 @@ export class Tab1Page implements OnInit {
                video.onloadedmetadata = (e) => {
                  console.log(e);
                  video.play();
-                 setTimeout(() => {
                    var context = canvas.getContext('2d');
                    let width = 300;
                    let height = 250;
@@ -97,11 +113,8 @@ export class Tab1Page implements OnInit {
                      context.drawImage(video, 0, 0, width, height);
 
                      var data = canvas.toDataURL('image/png');
-                     this.sendImage(data).subscribe((data) => {
-                       console.log(data);
-                     });
+                     this.sendImageRecursive(data);
                    }
-                 }, 1000);
                }
              });
            }
@@ -135,9 +148,60 @@ export class Tab1Page implements OnInit {
     return this.http.get(environment.url + "id/0/", { responseType: 'text' })
   }
 
+  sendImageRecursive(image) {
+    setTimeout(() => {
+      this.sendImage(image).subscribe(data => {
+        let canvas = this.canvas.nativeElement;
+        var context = canvas.getContext('2d');
+        context.drawImage(this.myVideo.nativeElement, 0, 0, 300, 250);
+
+        var d = canvas.toDataURL('image/png');
+        console.log(data);
+        this.sendImageRecursive(d);
+      });
+    }, 500);
+  }
+
   sendImage(image) {
+    // Split the base64 string in data and contentType
+        var block = image.split(";");
+    // Get the content type of the image
+        var contentType = block[0].split(":")[1];// In this case "image/gif"
+    // get the real base64 content of the file
+        var realData = block[1].split(",")[1];// In this case "R0lGODlhPQBEAPeoAJosM...."
+
+    // Convert it to a blob to upload
+        var blob = this.b64toBlob(realData, contentType, 0);
+
+    // Create a FormData and append the file with "image" as parameter name
+        var formDataToUpload = new FormData();
+        formDataToUpload.append("image", blob);
     let headers: HttpHeaders = new HttpHeaders();
     headers.append('Content-Type', 'multipart/form-data');
-    return this.http.post(environment.url + "aslf", {image: image}, {headers: headers, responseType: 'text'})
+    return this.http.post(environment.url + "aslf", formDataToUpload, {headers: headers, responseType: 'text'})
+  }
+
+  b64toBlob(b64Data, contentType, sliceSize) {
+    contentType = contentType || '';
+    sliceSize = sliceSize || 512;
+
+    var byteCharacters = atob(b64Data);
+    var byteArrays = [];
+
+    for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+      var byteNumbers = new Array(slice.length);
+      for (var i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+
+      var byteArray = new Uint8Array(byteNumbers);
+
+      byteArrays.push(byteArray);
+    }
+
+    var blob = new Blob(byteArrays, {type: contentType});
+    return blob;
   }
 }

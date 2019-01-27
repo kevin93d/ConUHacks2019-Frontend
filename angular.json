@@ -39,7 +39,7 @@
                 "input": "src/global.scss"
               }
             ],
-            "scripts": ["src/assets/peer.js"]
+            "scripts": ["src/assets/peer.js", "node_modules/webrtc-adapter/out/adapter.js"]
           },
           "configurations": {
             "production": {
