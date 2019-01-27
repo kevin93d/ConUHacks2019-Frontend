@@ -21,7 +21,7 @@ export class Tab1Page implements OnInit {
   anotherid: any;
   mypeerid: any;
   isConnected: boolean;
-  text: String;
+  text: string;
   constructor(private tts: TextToSpeech, private http: HttpClient) {
     this.locale = 'en-CA';
     this.text = '';
