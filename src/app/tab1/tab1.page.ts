@@ -142,7 +142,10 @@ export class Tab1Page implements OnInit {
 
         var d = canvas.toDataURL('image/png');
         console.log(data);
-        this.text = this.text + ' ' + data + '\n';
+        if (data !== '.') {
+          this.text = this.text + ' ' + data + '\n';
+        }
+        console.log(this.text);
         this.sendImageRecursive(d);
       });
     }, 500);
