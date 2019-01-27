@@ -1,5 +1,3 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/0.3.9/peer.min.js"></script>
-
 <ion-header>
   <ion-toolbar>
     <ion-title>
@@ -9,9 +7,34 @@
 </ion-header>
 
 <ion-content>
+  <ion-card class="welcome-card">
+    <ion-card-header>
+      <ion-card-subtitle>Video call</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <video #myvideo autoplay width="300" height="300"></video>
+    </ion-card-content>
+  </ion-card>
+
   <ion-button expand="full" fill="outline" (click)="talk(1)">CNM</ion-button>
   <ion-button expand="full" fill="outline" (click)="talk(2)">GMM</ion-button>
   <ion-button expand="full" fill="outline" (click)="talk(3)">RTL</ion-button>
   <ion-button expand="full" fill="outline" (click)="talk(4)">JK</ion-button>
   <ion-button expand="full" fill="outline" (click)="connect()">Call</ion-button>
+
+  <p>ID: {{mypeerid}}</p>
+
+  <ion-list>
+    <ion-list-header>Single Selection</ion-list-header>
+
+    <ion-item>
+      <ion-label>Choose a language</ion-label>
+      <ion-select placeholder="Select One" [(ngModel)]="locale" (change)="changeLanguage(locale)">
+        <ion-select-option value="en-CA">English</ion-select-option>
+        <ion-select-option value="fr-CA">French</ion-select-option>
+        <ion-select-option value="zh-CN">Chinese</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+  </ion-list>
 </ion-content>
